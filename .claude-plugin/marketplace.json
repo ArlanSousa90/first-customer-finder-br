@@ -1,14 +1,14 @@
 {
-  "name": "carolinacherry",
-  "description": "Skills by Daniel An — startup research and go-to-market tools for Claude.",
+  "name": "arlansousa90",
+  "description": "Fork BR da skill first-customer-finder.",
   "owner": {
-    "name": "Daniel An"
+    "name": "ArlanSousa90"
   },
   "plugins": [
     {
-      "name": "first-customer-finder",
+      "name": "first-customer-finder-br",
       "source": "./",
-      "description": "Find and qualify evidence-backed potential first customers for a startup from recent public signals — ICP analysis, verified pain/buying signals, scored shortlist, drafted outreach openers, and a polished HTML report. Never sends messages."
+      "description": "Possíveis primeiros clientes com evidência pública verificada, em português, com regras de LGPD. Nunca envia mensagens."
     }
   ]
 }

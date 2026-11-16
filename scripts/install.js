@@ -6,15 +6,15 @@ const path = require("path");
 
 function usage() {
   console.log(`
-First Customer Finder skill installer (Claude Code)
+Instalador da skill First Customer Finder BR (Claude Code)
 
 Usage:
-  npx --yes claude-first-customer-finder-skill
-  claude-first-customer-finder-skill --skills-dir ~/.claude/skills
+  npx --yes github:ArlanSousa90/first-customer-finder-br#v0.1.0-br.1
+  node scripts/install.js --skills-dir ~/.claude/skills
 
 Options:
-  --skills-dir PATH  Install into a custom skills directory
-  --help             Show this help
+  --skills-dir PATH  Instala numa pasta de skills específica
+  --help             Mostra esta ajuda
 `);
 }
 
@@ -68,20 +68,21 @@ function main() {
     return;
   }
 
-  const source = path.resolve(__dirname, "..", "skills", "first-customer-finder");
+  const source = path.resolve(__dirname, "..", "skills", "first-customer-finder-br");
   const skillsDir = path.resolve(options.skillsDir || defaultSkillsDir());
-  const destination = path.join(skillsDir, "first-customer-finder");
+  const destination = path.join(skillsDir, "first-customer-finder-br");
   if (!fs.existsSync(source)) throw new Error(`Cannot find bundled skill at ${source}`);
 
   fs.mkdirSync(skillsDir, { recursive: true });
+  if (path.basename(destination) !== "first-customer-finder-br") throw new Error(`Destino inesperado: ${destination}`);
   fs.rmSync(destination, { recursive: true, force: true });
   copyDirectory(source, destination);
 
-  console.log("Installed the first-customer-finder skill for Claude Code.");
-  console.log(`Location: ${destination}`);
+  console.log("Skill first-customer-finder-br instalada no Claude Code.");
+  console.log(`Local: ${destination}`);
   console.log("");
-  console.log("Start a new Claude Code session, then try:");
-  console.log('  "Find ten potential first customers for https://example.com"');
+  console.log("Abra uma nova sessão do Claude Code e peça, por exemplo:");
+  console.log('  "Ache dez possíveis primeiros clientes para https://exemplo.com.br"');
 }
 
 try {

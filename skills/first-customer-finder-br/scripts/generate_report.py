@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a First Customer Finder analysis JSON as a standalone HTML report."""
+"""Gera o relatório HTML autônomo (em português) a partir do JSON de análise da First Customer Finder BR."""
 
 from __future__ import annotations
 
@@ -11,17 +11,20 @@ from typing import Any
 from urllib.parse import urlparse
 
 SCORE_DIMENSIONS = {
-    "pain": "Pain strength",
-    "fit": "Product fit",
-    "timing": "Timing",
-    "reachability": "Reachability",
-    "evidence": "Evidence quality",
+    "pain": "Dor",
+    "fit": "Encaixe",
+    "timing": "Momento",
+    "reachability": "Alcance",
+    "evidence": "Evidência",
 }
 
 STAGE_CLASSES = {
     "high": "stage-high",
+    "alta": "stage-high",
     "problem": "stage-warm",
+    "ciente": "stage-warm",
     "trigger": "stage-warm",
+    "gatilho": "stage-warm",
 }
 
 
@@ -65,10 +68,10 @@ def stage_class(stage: Any) -> str:
 
 def score_band(score: int) -> str:
     if score >= 80:
-        return "Strong candidate"
+        return "Candidato forte"
     if score >= 65:
-        return "Promising"
-    return "Needs validation"
+        return "Promissor"
+    return "Precisa validar"
 
 
 def render_scores(scores: dict[str, Any]) -> str:
@@ -92,9 +95,9 @@ def render_prospect(prospect: dict[str, Any], index: int) -> str:
         <header>
           <span class="index">{index:02d}</span>
           <div class="who">
-            <small>{esc(prospect.get('type', 'Public prospect'))}</small>
+            <small>{esc(prospect.get('type', 'Prospect público'))}</small>
             <h3>{esc(prospect.get('name', f'Prospect {index}'))}</h3>
-            <span class="stage {stage_class(prospect.get('stage'))}">{esc(prospect.get('stage', 'Potential fit'))}</span>
+            <span class="stage {stage_class(prospect.get('stage'))}">{esc(prospect.get('stage', 'Encaixe possível'))}</span>
           </div>
           <div class="fit">
             <strong>{score}</strong>
@@ -104,18 +107,18 @@ def render_prospect(prospect: dict[str, Any], index: int) -> str:
         </header>
         <p class="signal">{esc(prospect.get('signal', ''))}</p>
         <dl class="facts">
-          <div><dt>Why it fits</dt><dd>{esc(prospect.get('why_fit', ''))}</dd></div>
-          <div><dt>Why now</dt><dd>{esc(prospect.get('why_now', ''))}</dd></div>
-          <div><dt>Channel</dt><dd>{esc(prospect.get('channel', ''))}</dd></div>
-          <div><dt>Caution</dt><dd>{esc(prospect.get('caution', 'Confirm the signal is still current before outreach.'))}</dd></div>
+          <div><dt>Por que encaixa</dt><dd>{esc(prospect.get('why_fit', ''))}</dd></div>
+          <div><dt>Por que agora</dt><dd>{esc(prospect.get('why_now', ''))}</dd></div>
+          <div><dt>Canal</dt><dd>{esc(prospect.get('channel', ''))}</dd></div>
+          <div><dt>Cuidado</dt><dd>{esc(prospect.get('caution', 'Confirme que o sinal ainda vale antes de abordar.'))}</dd></div>
         </dl>
-        <div class="opener"><dt>Suggested opener (draft — never auto-sent)</dt><p>{esc(prospect.get('opener', ''))}</p></div>
+        <div class="opener"><dt>Mensagem sugerida (rascunho — nunca enviada automaticamente)</dt><p>{esc(prospect.get('opener', ''))}</p></div>
         <details>
-          <summary>Evidence &amp; score breakdown</summary>
+          <summary>Evidência e detalhamento da nota</summary>
           <p>{esc(prospect.get('evidence', ''))}</p>
           <p class="source">
-            {esc(source.get('type', 'Public source'))} · {esc(source.get('date', 'date unavailable'))} ·
-            <a href="{url}" target="_blank" rel="noreferrer">{esc(source.get('title', 'Open original source'))} ↗</a>
+            {esc(source.get('type', 'Fonte pública'))} · {esc(source.get('date', 'data indisponível'))} ·
+            <a href="{url}" target="_blank" rel="noreferrer">{esc(source.get('title', 'Abrir a fonte original'))} ↗</a>
           </p>
           <div class="dims">{render_scores(as_dict(prospect.get('scores')))}</div>
         </details>
@@ -125,7 +128,7 @@ def render_prospect(prospect: dict[str, Any], index: int) -> str:
 def render_pattern(pattern: dict[str, Any]) -> str:
     return (
         f'<article class="pattern"><strong>{clamp(pattern.get("count"), 999)}×</strong>'
-        f'<div><h3>{esc(pattern.get("title", "Repeated signal"))}</h3>'
+        f'<div><h3>{esc(pattern.get("title", "Sinal repetido"))}</h3>'
         f'<p>{esc(pattern.get("insight", ""))}</p></div></article>'
     )
 
@@ -146,19 +149,19 @@ def build_html(data: dict[str, Any]) -> str:
     plan_html = "".join(
         f'<div><dt>{esc(label)}</dt><dd>{esc(plan.get(key, ""))}</dd></div>'
         for key, label in (
-            ("first_step", "First step"),
-            ("follow_up", "Follow-up"),
-            ("success", "Success signal"),
+            ("first_step", "Primeiro passo"),
+            ("follow_up", "Acompanhamento"),
+            ("success", "Sinal de sucesso"),
         )
     )
 
     return f"""<!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>{esc(data.get('title', 'First Customer Finder'))}</title>
+<title>{esc(data.get('title', 'Primeiros clientes'))}</title>
 <style>
   :root{{--paper:#faf7f2;--card:#ffffff;--ink:#1c1917;--muted:#6f675e;--line:#e4ddd2;--accent:#c2410c;--accent-soft:#fff1e7;--good:#166534;--radius:14px}}
   @media(prefers-color-scheme:dark){{:root{{--paper:#151312;--card:#1e1b19;--ink:#efeae3;--muted:#a39a8f;--line:#332e29;--accent:#fb923c;--accent-soft:#2b2019;--good:#4ade80}}}}
@@ -222,48 +225,48 @@ def build_html(data: dict[str, Any]) -> str:
 <body>
 <div class="wrap">
   <header class="masthead">
-    <span class="kicker">First customer finder · {esc(data.get('generated_at', ''))} · {esc(data.get('mode', 'standard'))} mode</span>
-    <h1>{esc(data.get('title', 'First Customer Finder'))}</h1>
-    <p class="verdict">{esc(data.get('verdict', 'No verdict supplied.'))}</p>
+    <span class="kicker">Primeiros clientes · {esc(data.get('generated_at', ''))} · modo {esc(data.get('mode', 'padrão'))}</span>
+    <h1>{esc(data.get('title', 'Primeiros clientes'))}</h1>
+    <p class="verdict">{esc(data.get('verdict', 'Sem veredito.'))}</p>
   </header>
 
   <dl class="facts-row">
-    <div><dt>Product</dt><dd><a href="{safe_url(data.get('product_url'))}" target="_blank" rel="noreferrer">{esc(data.get('product', 'Not specified'))}</a></dd></div>
-    <div><dt>Target customer</dt><dd>{esc(data.get('target_customer', 'Not specified'))}</dd></div>
-    <div><dt>Qualified prospects</dt><dd>{len(prospects)} ({high_intent} high intent)</dd></div>
-    <div><dt>Average fit score</dt><dd>{average}/100</dd></div>
+    <div><dt>Produto</dt><dd><a href="{safe_url(data.get('product_url'))}" target="_blank" rel="noreferrer">{esc(data.get('product', 'Não informado'))}</a></dd></div>
+    <div><dt>Cliente-alvo</dt><dd>{esc(data.get('target_customer', 'Não informado'))}</dd></div>
+    <div><dt>Prospects qualificados</dt><dd>{len(prospects)} ({high_intent} de alta intenção)</dd></div>
+    <div><dt>Nota média</dt><dd>{average}/100</dd></div>
   </dl>
 
   <section class="top-pick">
     <div>
-      <span class="kicker">Highest-confidence prospect</span>
-      <h2>{esc(top.get('name', 'No qualified prospect'))}</h2>
+      <span class="kicker">Prospect mais forte</span>
+      <h2>{esc(top.get('name', 'Nenhum prospect qualificado'))}</h2>
       <p>{esc(top.get('why_now', top.get('signal', '')))}</p>
     </div>
     <strong class="big">{clamp(top.get('score'))}</strong>
   </section>
 
-  <h2 class="section">Prospects with a reason to care now</h2>
-  <p class="section-note">Every entry is tied to a verified public signal — open the evidence before considering outreach. Scope: {esc(data.get('search_scope', 'not specified'))}.</p>
-  {prospect_html or '<p>No qualified prospects supplied.</p>'}
+  <h2 class="section">Prospects com motivo para se importar agora</h2>
+  <p class="section-note">Cada item está ligado a um sinal público verificado — abra a evidência antes de pensar em abordar. Escopo: {esc(data.get('search_scope', 'não informado'))}.</p>
+  {prospect_html or '<p>Nenhum prospect qualificado.</p>'}
 
-  <h2 class="section">Signals that repeat</h2>
-  <p class="section-note">Recurring pains and triggers across prospects — your strongest positioning and outreach angles.</p>
-  <div class="patterns">{pattern_html or '<p>No repeated patterns supplied.</p>'}</div>
+  <h2 class="section">Sinais que se repetem</h2>
+  <p class="section-note">Dores e gatilhos recorrentes entre os prospects — seus melhores ângulos de posicionamento e abordagem.</p>
+  <div class="patterns">{pattern_html or '<p>Nenhum padrão repetido.</p>'}</div>
 
-  <h2 class="section">Seven-day manual validation plan</h2>
+  <h2 class="section">Plano de validação manual de sete dias</h2>
   <div class="plan">
-    <span class="kicker">Angle</span>
-    <p class="angle">{esc(plan.get('angle', 'Validate the pain before pitching the product.'))}</p>
+    <span class="kicker">Ângulo</span>
+    <p class="angle">{esc(plan.get('angle', 'Valide a dor antes de apresentar o produto.'))}</p>
     <div class="plan-grid">{plan_html}</div>
   </div>
 
-  <h2 class="section">Read this before acting</h2>
-  <ul class="limits">{limits_html or '<li>Potential customers inferred from public signals, not confirmed buyers.</li>'}</ul>
+  <h2 class="section">Leia antes de agir</h2>
+  <ul class="limits">{limits_html or '<li>Possíveis clientes inferidos de sinais públicos, não compradores confirmados.</li>'}</ul>
 
   <footer>
-    <span>Generated by the first-customer-finder skill</span>
-    <span>Public signals only · outreach is never sent automatically</span>
+    <span>Gerado pela skill first-customer-finder-br</span>
+    <span>Só sinais públicos · nenhuma mensagem é enviada automaticamente</span>
   </footer>
 </div>
 </body>
@@ -278,11 +281,11 @@ def main() -> None:
 
     data = json.loads(args.input.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
-        raise SystemExit("Input JSON must be an object at the top level.")
+        raise SystemExit("O JSON de entrada precisa ser um objeto no nível mais alto.")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(build_html(data), encoding="utf-8")
-    print(f"Created report: {args.output.resolve()}")
+    print(f"Relatório criado: {args.output.resolve()}")
 
 
 if __name__ == "__main__":
